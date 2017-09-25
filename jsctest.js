@@ -3,17 +3,17 @@ function load()
     var input = document.getElementById("textInput");
     var parser = new CommandParser(input);
     
-    parser.register(new Command("walk", null, function(e, inputText, parser)
+    parser.register(new Command(/\w+(\s+(\w+))*/i, function(e, inputText, parser)
     {
         console.log("MOVING!!!");
         return true;
-    }, "move", "go"));
+    }, "walk", "move", "go"));
     
-    parser.register(new Command("wish", null, function(e, inputText, parser)
+    parser.register(new Command(/.*/, function(e, inputText, parser)
     {
         console.log("Wish upon a star!");
         return true;
-    }, "hope", "pray"));
+    }, "wish", "hope", "pray"));
 }
 
 function parseInput(e)

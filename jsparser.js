@@ -1,13 +1,27 @@
-function Command(string, hotkey, callback, ...aliases)
+function Command(tokeniserExpression, callback, ...aliases)
 {
-    this.key = string;
-    this.hotkey = hotkey;
-    this.handleEvent = callback;
+    this.tokeniserExpression = tokeniserExpression || ".*";
+    this.hotkeys = {};
+    this.handleCommand = function(tokens)
+	{
+		console.log(tokens);
+		//return true; //to continue running command handler
+	}.bind(this);//TODO: callback;
     this.aliases = aliases;
-    if(string)
-    {
-        this.aliases.unshift(string);
-    }
+	this.addHotkey = function(hotkey, passArgs)
+	{
+		this.hotkeys[hotkey] = passArgs || "";
+		return this;
+	}.bind(this);
+	this.handleHotkey = function(key, e, inputText, parser)
+	{
+		return !this.handleCommand(this.tokenise(inputText.value + this.hotkeys[key]));
+	}.bind(this);
+	this.tokenise = function(string)
+	{
+		return string.match(this.tokeniserExpression);
+		//TODO: tokenise
+	}.bind(this);
 }
 
 function CommandParser(inputText)
@@ -46,10 +60,14 @@ function CommandParser(inputText)
     this.handlers = [];
     this.register = function(commandHandler)//TODO: add handlers directly to parser, not abstracted
     {
+		console.log(commandHandler);
         this.handlers.push(commandHandler);
-        if(commandHandler.hotkey != null)
+        if(commandHandler.hotkeys)
         {
-            this.hotkeys[commandHandler.hotkey] = commandHandler;
+			for(var hotkey in commandHandler.hotkeys)
+			{
+				this.hotkeys[hotkey] = commandHandler;
+			}
         }
     }.bind(this);
     this.__handleKeyDown = function(e)
@@ -61,8 +79,9 @@ function CommandParser(inputText)
         var key = e.key;
         if(key in this.hotkeys)
         {
-            console.log(this.hotkeys[key]);
-            if(!this.hotkeys[key].handleEvent(e, this.inputText, this))
+			var handler = this.hotkeys[key];
+			/*if(!this.hotkeys[key].handleEvent(e, this.inputText, this))*/
+            if(handler.handleHotkey(key, e, this.inputText, this))
             {
                 return;
             }
@@ -78,10 +97,8 @@ function CommandParser(inputText)
         var options = [];
         for(var h of this.handlers)
         {
-            console.log("%O:", h);
             for(var a of h.aliases)
             {
-                console.log(a);
                 if(a.startsWith(text))
                 {
                     options.push(a);
@@ -100,16 +117,17 @@ function CommandParser(inputText)
     //this.inputText.addEventListener("keydown.commandParser", this.__handleKeyDown);
 }
 
-var returnKeyHandler = new Command(null, "Enter", function(e, inputText, parser)
+var returnKeyHandler = new Command(".*").addHotkey("Enter");
+returnKeyHandler.handleHotkey = function(key, e, inputText, parser)
     {
         e.preventDefault();
         parser.parseAndSubmit(inputText.value);//TODO:?
         parser.clearText();
-    });
-var tabKeyHandler = new Command(null, "Tab", function(e, inputText, parser)
+    }.bind(returnKeyHandler);
+var tabKeyHandler = new Command(".*").addHotkey("Tab");
+tabKeyHandler.handleHotkey = function(key, e, inputText, parser)
     {
         e.preventDefault();
-        console.log("%O;\t%s", parser.__autocomplete, parser.currentText);
         if(parser.__autocomplete.text != parser.currentText)
         {
             console.log("Text: %s;\t%s", parser.__autocomplete.text, parser.currentText);
@@ -136,4 +154,4 @@ var tabKeyHandler = new Command(null, "Tab", function(e, inputText, parser)
             }
         }
         parser.__autocomplete.index = index;
-    });
+    }.bind(tabKeyHandler);
