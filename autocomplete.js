@@ -3,25 +3,25 @@ function Command(tokeniserExpression, callback, ...aliases)
     this.tokeniserExpression = tokeniserExpression || ".*";
     this.hotkeys = {};
     this.handleCommand = function(tokens)
-	{
-		console.log(tokens);
-		//return true; //to continue running command handler
-	}.bind(this);//TODO: callback;
+    {
+        console.log(tokens);
+        //return true; //to continue running command handler
+    }.bind(this);//TODO: callback;
     this.aliases = aliases;
-	this.addHotkey = function(hotkey, passArgs)
-	{
-		this.hotkeys[hotkey] = passArgs || "";
-		return this;
-	}.bind(this);
-	this.handleHotkey = function(key, e, inputText, parser)
-	{
-		return !this.handleCommand(this.tokenise(inputText.value + this.hotkeys[key]));
-	}.bind(this);
-	this.tokenise = function(string)
-	{
-		return string.match(this.tokeniserExpression);
-		//TODO: tokenise
-	}.bind(this);
+    this.addHotkey = function(hotkey, passArgs)
+    {
+        this.hotkeys[hotkey] = passArgs || "";
+        return this;
+    }.bind(this);
+    this.handleHotkey = function(key, e, inputText, parser)
+    {
+        return !this.handleCommand(this.tokenise(inputText.value + this.hotkeys[key]));
+    }.bind(this);
+    this.tokenise = function(string)
+    {
+        return string.match(this.tokeniserExpression);
+        //TODO: tokenise
+    }.bind(this);
 }
 
 function CommandParser(inputText)
@@ -60,14 +60,14 @@ function CommandParser(inputText)
     this.handlers = [];
     this.register = function(commandHandler)//TODO: add handlers directly to parser, not abstracted
     {
-		console.log(commandHandler);
+        console.log(commandHandler);
         this.handlers.push(commandHandler);
         if(commandHandler.hotkeys)
         {
-			for(var hotkey in commandHandler.hotkeys)
-			{
-				this.hotkeys[hotkey] = commandHandler;
-			}
+            for(var hotkey in commandHandler.hotkeys)
+            {
+                this.hotkeys[hotkey] = commandHandler;
+            }
         }
     }.bind(this);
     this.__handleKeyDown = function(e)
@@ -79,8 +79,8 @@ function CommandParser(inputText)
         var key = e.key;
         if(key in this.hotkeys)
         {
-			var handler = this.hotkeys[key];
-			/*if(!this.hotkeys[key].handleEvent(e, this.inputText, this))*/
+            var handler = this.hotkeys[key];
+            /*if(!this.hotkeys[key].handleEvent(e, this.inputText, this))*/
             if(handler.handleHotkey(key, e, this.inputText, this))
             {
                 return;
