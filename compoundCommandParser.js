@@ -1,40 +1,45 @@
-function CommandParser(inputText)
+class CommandParser
 {
-    this.inputText = inputText;
-    this.currentText = inputText.value;
-    this.active = true;
-    this.hotkeys = {};
-    this.activate = function()
+    constructor(inputText)
+    {
+        this.inputText = inputText;
+        this.currentText = inputText.value;
+        this.active = true;
+        this.hotkeys = {};
+        this.addHotkey("Enter", returnKeyBind)
+        this.inputText.addEventListener("keydown", this.__handleKeyDown.bind(this));
+    }
+    activate()
     {
         this.active = true;
         return this;
-    }.bind(this);
-    this.deactivate = function()
+    }
+    deactivate()
     {
         this.active = false;
         return this;
-    }.bind(this);
-    this.setText = function(text, displayedOnly)
+    }
+    setText(text, displayedOnly)
     {
         this.inputText.value = text;
         if(!displayedOnly)
         {
             this.currentText = text;
         }
-    }.bind(this);
-    this.addHotkey = function(key, callback)
+    }
+    addHotkey(key, callback)
     {
         if(key in this.hotkeys)
         {
             console.log("Replacing keybind \"%s\": %O with: %O", key, this.hotkeys[key], callback);
         }
         this.hotkeys[key] = callback;
-    }.bind(this);
-    this.clearText = function()
+    }
+    clearText()
     {
         this.setText("", false);
-    }.bind(this);
-    this.__handleKeyDown = function(e)
+    }
+    __handleKeyDown(e)
     {
         if(!this.active)
         {
@@ -44,9 +49,7 @@ function CommandParser(inputText)
         {
             var result = this.hotkeys[e.key](e, this.inputText.value, this);
         }
-    }.bind(this);
-    this.addHotkey("Enter", returnKeyBind)
-    this.inputText.addEventListener("keydown", this.__handleKeyDown);
+    }
 }
     
 function returnKeyBind(e, input, parser)
