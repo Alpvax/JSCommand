@@ -19,14 +19,23 @@ class CommandParser
         this.active = false;
         return this;
     }
-    setText(text, displayedOnly)
+    get text()
+    {
+        return this.inputText.value
+    }
+    set text(value)
+    {
+        this.inputText.value = value
+        this.currentText = value;
+    }
+    /*setText(text, displayedOnly)
     {
         this.inputText.value = text;
         if(!displayedOnly)
         {
             this.currentText = text;
         }
-    }
+    }*/
     addHotkey(key, callback)
     {
         if(key in this.hotkeys)
