@@ -1,3 +1,21 @@
+/*class AutoCompleter
+{
+    constructor()
+    {
+        this.text = null;
+        this.options = [];
+    }
+    trigger(text)
+    {
+        this.active = text;
+        this.calculate();
+    }
+    calculate(text)
+    {
+        this.options = 
+    }
+}*/
+
 class CommandParser
 {
     constructor(inputText)
@@ -6,7 +24,9 @@ class CommandParser
         this.currentText = inputText.value;
         this.active = true;
         this.hotkeys = {};
-        this.addHotkey("Enter", returnKeyBind)
+        this.addHotkey("Enter", returnKeyBind);
+        //this.addHotkey("Tab", returnKeyBind);
+        this.addHotkey("Escape", escKeyBind);
         this.inputText.addEventListener("keydown", this.__handleKeyDown.bind(this));
     }
     activate()
@@ -46,7 +66,7 @@ class CommandParser
     }
     clearText()
     {
-        this.setText("", false);
+        this.text = "";
     }
     __handleKeyDown(e)
     {
@@ -60,7 +80,7 @@ class CommandParser
         }
     }
 }
-    
+
 function returnKeyBind(e, input, parser)
 {
     e.preventDefault();
@@ -68,3 +88,40 @@ function returnKeyBind(e, input, parser)
     console.log(input);
     parser.clearText();
 }
+
+function escKeyBind(e, input, parser)
+{
+    e.preventDefault();
+    parser.clearText();
+}
+
+/*function tabKeyBind(e, input, parser)
+{
+    e.preventDefault();
+    if(parser.__autocomplete.text != parser.currentText)
+    {
+        console.log("Text: %s;\t%s", parser.__autocomplete.text, parser.currentText);
+        parser.__autocomplete.text = parser.currentText;
+        parser.__autocomplete.options = parser.getTabCompletionOptions(parser.currentText);
+        parser.__autocomplete.index = 0;
+    }
+    var index = parser.__autocomplete.index
+    parser.setInputValue(parser.__autocomplete.options[index]);
+    if(e.shiftKey)//Opposite direction
+    {
+        index--;
+        if(index < 0)
+        {
+            index = parser.__autocomplete.options.length - 1;
+        }
+    }
+    else
+    {
+        index++;
+        if(index >= parser.__autocomplete.options.length)
+        {
+            index = 0;
+        }
+    }
+    parser.__autocomplete.index = index;
+}*/
