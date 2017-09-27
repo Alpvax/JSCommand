@@ -2,6 +2,9 @@ function load()
 {
     var input = document.getElementById("textInput");
     var parser = new CommandParser(input);
+    //new CommandComponent("noSyntax");
+    new SubComponentTest("noSyntax");
+    console.log(SubComponentTest.componentType);
 }
 
 
