@@ -1,3 +1,5 @@
+var {CommandComponent, SubComponentTest} = require("./CommandComponent");
+
 /*class AutoCompleter
 {
     constructor()
@@ -18,10 +20,10 @@
 
 class CommandParser
 {
-    constructor(inputText)
+    constructor(inputText, defaultSyntax)
     {
         this.inputText = inputText;
-        this.currentText = inputText.value;
+        this.defaultSyntax = defaultSyntax;
         this.active = true;
         this.hotkeys = {};
         this.addHotkey("Enter", returnKeyBind);
@@ -46,7 +48,6 @@ class CommandParser
     set text(value)
     {
         this.inputText.value = value
-        this.currentText = value;
     }
     /*setText(text, displayedOnly)
     {
@@ -125,3 +126,5 @@ function escKeyBind(e, input, parser)
     }
     parser.__autocomplete.index = index;
 }*/
+
+module.exports = CommandParser

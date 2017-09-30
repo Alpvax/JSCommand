@@ -1,13 +1,11 @@
-function load()
+function onLoad(input)
 {
-    var input = document.getElementById("textInput");
-    var parser = new CommandParser(input);
+    let CommandParser = require("./compoundCommandParser.js");
+    let parser = new CommandParser(input);
+    let {CommandComponent, SubComponentTest} = require("./CommandComponent.js");
     //new CommandComponent("noSyntax");
     new SubComponentTest("noSyntax");
-    console.log(SubComponentTest.componentType);
 }
-
-
 
 
 function loadAutoComplete()//Not called
@@ -27,3 +25,5 @@ function loadAutoComplete()//Not called
         return true;
     }, "wish", "hope", "pray"));
 }
+
+module.exports = onLoad;

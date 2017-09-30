@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html lang="en-us">
+<html lang="en-gb">
     <head>
-        <!--    <script src="alpLib.js"></script>   -->
-        <script src="compoundCommandParser.js"></script>
-        <script src="CommandComponent.js"></script>
-        <script src="jsctest.js"></script>
+        <script>
+            function onLoad()
+            {
+                require("./jsctest.js")(document.getElementById("textInput"));
+            }
+        </script>
     </head>
-    <body onload="load()">
-        <input type="text" id="textInput"/>
-        
+    <body onload="onLoad()">
+        <input type="text" id="textInput"></input>
     </body>
 </html>

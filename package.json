@@ -1,0 +1,22 @@
+{
+  "name": "jscommand",
+  "version": "0.1.0",
+  "description": "Javascript Command Handling framwork",
+  "main": "compoundCommandParser.js",
+  "scripts": {
+    "test": "electron electronTest.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Alpvax/JSCommand.git"
+  },
+  "author": "Alpvax <development@alpvax.uk>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Alpvax/JSCommand/issues"
+  },
+  "homepage": "https://github.com/Alpvax/JSCommand#readme",
+  "devDependencies": {
+    "electron": "^1.7.5"
+  }
+}
