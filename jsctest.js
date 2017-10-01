@@ -1,12 +1,16 @@
+const CommandParser = require("./compoundCommandParser.js");
+const {CommandComponent, SubComponentTest} = require("./CommandComponent.js");
+
 function onLoad(input)
 {
-    let CommandParser = require("./compoundCommandParser.js");
     let parser = new CommandParser(input);
-    let {CommandComponent, SubComponentTest} = require("./CommandComponent.js");
+    parser.__getAutoCompletionOptions = function()//Force some autoCompletions until fully implemented.
+    {
+        return ["walk", "run", "pray"];
+    }
     //new CommandComponent("noSyntax");
     new SubComponentTest("noSyntax");
 }
-
 
 function loadAutoComplete()//Not called
 {
@@ -25,5 +29,4 @@ function loadAutoComplete()//Not called
         return true;
     }, "wish", "hope", "pray"));
 }
-
 module.exports = onLoad;

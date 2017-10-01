@@ -1,22 +1,4 @@
-var {CommandComponent, SubComponentTest} = require("./CommandComponent");
-
-/*class AutoCompleter
-{
-    constructor()
-    {
-        this.text = null;
-        this.options = [];
-    }
-    trigger(text)
-    {
-        this.active = text;
-        this.calculate();
-    }
-    calculate(text)
-    {
-        this.options = 
-    }
-}*/
+const AutoCompleter = require("./AutoCompleter.js");
 
 class CommandParser
 {
@@ -26,9 +8,10 @@ class CommandParser
         this.defaultSyntax = defaultSyntax;
         this.active = true;
         this.hotkeys = {};
+        this.autocompleter = new AutoCompleter(this);
         this.addHotkey("Enter", returnKeyBind);
-        //this.addHotkey("Tab", returnKeyBind);
         this.addHotkey("Escape", escKeyBind);
+        this.addHotkey("Tab", this.autocomplete);
         this.inputText.addEventListener("keydown", this.__handleKeyDown.bind(this));
     }
     activate()
@@ -49,14 +32,6 @@ class CommandParser
     {
         this.inputText.value = value
     }
-    /*setText(text, displayedOnly)
-    {
-        this.inputText.value = text;
-        if(!displayedOnly)
-        {
-            this.currentText = text;
-        }
-    }*/
     addHotkey(key, callback)
     {
         if(key in this.hotkeys)
@@ -69,6 +44,14 @@ class CommandParser
     {
         this.text = "";
     }
+    /**
+     * Use this to autocomplete the entry. arguments are keyEvent, current text, and the parser instance.
+     */
+    autocomplete(e, input, parser)
+    {
+        e.preventDefault();
+        parser.autocompleter.fillNext(e.shiftKey);//Reverse diresction if shift held.
+    }
     __handleKeyDown(e)
     {
         if(!this.active)
@@ -77,8 +60,17 @@ class CommandParser
         }
         if(e.key in this.hotkeys)
         {
-            var result = this.hotkeys[e.key](e, this.inputText.value, this);
+            let callback = this.hotkeys[e.key];
+            if(callback != this.autocomplete)
+            {
+                this.autocompleter.disable();
+            }
+            var result = callback(e, this.inputText.value, this);
         }
+    }
+    __getAutoCompletionOptions()
+    {
+        return [];//TODO
     }
 }
 
@@ -95,36 +87,5 @@ function escKeyBind(e, input, parser)
     e.preventDefault();
     parser.clearText();
 }
-
-/*function tabKeyBind(e, input, parser)
-{
-    e.preventDefault();
-    if(parser.__autocomplete.text != parser.currentText)
-    {
-        console.log("Text: %s;\t%s", parser.__autocomplete.text, parser.currentText);
-        parser.__autocomplete.text = parser.currentText;
-        parser.__autocomplete.options = parser.getTabCompletionOptions(parser.currentText);
-        parser.__autocomplete.index = 0;
-    }
-    var index = parser.__autocomplete.index
-    parser.setInputValue(parser.__autocomplete.options[index]);
-    if(e.shiftKey)//Opposite direction
-    {
-        index--;
-        if(index < 0)
-        {
-            index = parser.__autocomplete.options.length - 1;
-        }
-    }
-    else
-    {
-        index++;
-        if(index >= parser.__autocomplete.options.length)
-        {
-            index = 0;
-        }
-    }
-    parser.__autocomplete.index = index;
-}*/
 
 module.exports = CommandParser
