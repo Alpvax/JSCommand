@@ -2,7 +2,7 @@
   "name": "jscommand",
   "version": "0.1.0",
   "description": "Javascript Command Handling framwork",
-  "main": "compoundCommandParser.js",
+  "main": "main.js",
   "scripts": {
     "test": "electron electronTest.js"
   },
