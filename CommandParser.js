@@ -2,10 +2,9 @@ const AutoCompleter = require("./AutoCompleter.js");
 
 class CommandParser
 {
-    constructor(inputText, defaultSyntax)
+    constructor(inputText)
     {
         this.inputText = inputText;
-        this.defaultSyntax = defaultSyntax;
         this.active = true;
         this.hotkeys = {};
         this.autocompleter = new AutoCompleter(this);
@@ -13,6 +12,7 @@ class CommandParser
         this.addHotkey("Escape", this.clearText);
         this.addHotkey("Tab", this.autocomplete);
         this.inputText.addEventListener("keydown", this.__handleKeyDown.bind(this));
+        this.commands = [];
     }
     activate()
     {
@@ -83,10 +83,11 @@ class CommandParser
         {
             parser.clearText();
         }
-        /*else
-        {
-            throw Usage
-        }*/
+        return handled;
+    }
+    get usage()
+    {
+        //TODO: Usage
     }
     __handleKeyDown(e)
     {
