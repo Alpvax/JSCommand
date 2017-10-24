@@ -9,8 +9,8 @@ class CommandParser
         this.active = true;
         this.hotkeys = {};
         this.autocompleter = new AutoCompleter(this);
-        this.addHotkey("Enter", returnKeyBind);
-        this.addHotkey("Escape", escKeyBind);
+        this.addHotkey("Enter", this.submit);
+        this.addHotkey("Escape", this.clearText);
         this.addHotkey("Tab", this.autocomplete);
         this.inputText.addEventListener("keydown", this.__handleKeyDown.bind(this));
     }
@@ -40,17 +40,53 @@ class CommandParser
         }
         this.hotkeys[key] = callback;
     }
-    clearText()
+    /**
+     * Use this to clear all text from the entry. Optional argument is keyEvent (for convenience with addHotkey).
+     */
+    clearText(e)
     {
+        if(e && (e instanceof KeyboardEvent))
+        {
+            e.preventDefault();
+        }
         this.text = "";
     }
     /**
-     * Use this to autocomplete the entry. arguments are keyEvent, current text, and the parser instance.
+     * Use this to autocomplete the entry. Optional arguments are keyEvent for use with addHotkey and boolean to reverse direction.
      */
-    autocomplete(e, input, parser)
+    autocomplete(e, reverse)
     {
-        e.preventDefault();
-        parser.autocompleter.fillNext(e.shiftKey);//Reverse diresction if shift held.
+        var reverseDirection = false;
+        if(e && (e instanceof KeyboardEvent))
+        {
+            e.preventDefault();
+            reverseDirection = e.shiftKey;//Reverse diresction if shift held.
+        }
+        if(reverse)
+        {
+            reverseDirection = true;
+        }
+        this.autocompleter.fillNext(reverseDirection);
+    }
+    /**
+     * Use this to submit the command. Optional argument is keyEvent (for convenience with addHotkey).
+     */
+    submit(e)
+    {
+        if(e && (e instanceof KeyboardEvent))
+        {
+            e.preventDefault();
+        }
+        console.log(input);
+        let handled = true;//TODO
+        if(handled)
+        {
+            parser.clearText();
+        }
+        /*else
+        {
+            throw Usage
+        }*/
     }
     __handleKeyDown(e)
     {
@@ -72,20 +108,6 @@ class CommandParser
     {
         return [];//TODO
     }
-}
-
-function returnKeyBind(e, input, parser)
-{
-    e.preventDefault();
-    //TODO:parser.parseAndSubmit(inputText.value);
-    console.log(input);
-    parser.clearText();
-}
-
-function escKeyBind(e, input, parser)
-{
-    e.preventDefault();
-    parser.clearText();
 }
 
 module.exports = CommandParser

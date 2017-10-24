@@ -1,4 +1,4 @@
 module.exports = {
-    Parser: require("./compoundCommandParser.js"),
+    Parser: require("./CommandParser.js"),
     Component: require("./CommandComponent.js").CommandComponent
 };
