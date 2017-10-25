@@ -16,24 +16,37 @@ class CommandValue
     {
         return VAL_REGISTRY;
     }
-    getValues(input)
+    getCompletionValues(input)
     {
         var vals = [];
         for(let key in this.values)
         {
             let val = this.values[key];
-            if(val instanceof RegExp && val.test(input))
+            if(Array.isArray(val))
+            {
+                for(let v of val)
+                {
+                    if(v.startsWith(input))
+                    {
+                        vals.push(v);
+                    }
+                }
+            }
+            else if(val instanceof RegExp && val.test(input))
             {
                 vals.push(key);
             }
-            vals.push(val);
+            else
+            {
+                vals.push(val);
+            }
         }
         return vals;
     }
     getValue(input)
     {
-        console.warn("%s.getValue(input) method hasn't been overwritten. This CommandValue (%s) is redundant.", this.constructor.name, name);
-        return input;
+        let vals = this.getCompletionValues(input);
+        return vals.length == 1 ? vals[0] : null;
     }
 }
 
