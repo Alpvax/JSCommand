@@ -15,8 +15,5 @@
   "bugs": {
     "url": "https://github.com/Alpvax/JSCommand/issues"
   },
-  "homepage": "https://github.com/Alpvax/JSCommand#readme",
-  "devDependencies": {
-    "electron": "^1.7.5"
-  }
+  "homepage": "https://github.com/Alpvax/JSCommand#readme"
 }
