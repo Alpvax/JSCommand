@@ -16,6 +16,15 @@ class CommandValue
     {
         return VAL_REGISTRY;
     }
+    static getRegex(valueType)
+    {
+        let value = VAL_REGISTRY[valueType];
+        return value ? value.regex : null;
+    }
+    get regex()
+    {
+        return new RegExp(this.getCompletionValues("").join("|"), "i");
+    }
     getCompletionValues(input)
     {
         var vals = [];
@@ -26,13 +35,13 @@ class CommandValue
             {
                 for(let v of val)
                 {
-                    if(v.startsWith(input))
+                    if(!input || v.startsWith(input))
                     {
                         vals.push(v);
                     }
                 }
             }
-            else if(val instanceof RegExp && val.test(input))
+            else if(val instanceof RegExp && (!input || val.test(input)))
             {
                 vals.push(key);
             }

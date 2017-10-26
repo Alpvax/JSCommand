@@ -119,7 +119,7 @@ class CommandParser {
     this.active = true;
     this.hotkeys = {};
     this.autocompleter = new AutoCompleter(this);
-    this.addHotkey("Enter", (e) => this.submit);
+    this.addHotkey("Enter", this.submit);
     this.addHotkey("Escape", this.clearText);
     this.addHotkey("Tab", this.autocomplete);
     this.inputText.addEventListener("keydown", this.__handleKeyDown.bind(this));
