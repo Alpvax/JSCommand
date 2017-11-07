@@ -4,7 +4,7 @@
   "description": "Javascript Command Handling framwork",
   "main": "main.js",
   "scripts": {
-    "test": "electron electronTest.js"
+    "test": "electron test/electronTest.js"
   },
   "repository": {
     "type": "git",

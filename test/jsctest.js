@@ -1,5 +1,5 @@
-const CommandParser = require("./compoundCommandParser.js");
-const {CommandComponent, SubComponentTest} = require("./CommandComponent.js");
+const CommandParser = require("../compoundCommandParser.js");
+const {CommandComponent, SubComponentTest} = require("../CommandComponent.js");
 
 function onLoad(input)
 {
