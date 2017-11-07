@@ -1,89 +1,6 @@
 const AutoCompleter = require("./AutoCompleter.js");
 const CommandOverwritten = require("./CommandOverwritten.js");
 
-class CommandList {
-  constructor() {
-    this.commands = new Map();
-    this.aliases = new Map();
-  }
-  addCommand(command) {
-    var name = command.name;
-    if (this.commands.has(name)) {
-      let existingCmd = this.commands.get(name);
-      console.warn("Command %O already registered while trying to add Command %O with name %s.", existingCmd, command, name);
-      /*var overridden = new CommandOverwritten(existingCmd);
-      for(let alias of existingCmd.aliases)
-      {
-          this.aliases.set(alias, overridden);
-      }*/
-    }
-    this.commands.set(name, command);
-    for (let alias of command.aliases) {
-      if (this.aliases.has(alias)) {
-        this.aliases.get(alias).push(name);
-      } else {
-        this.aliases.set(alias, [name]);
-      }
-    }
-  }
-  removeCommand(name) {
-    if (this.commands.has(name)) {
-      for (let alias of this.commands.get(name).aliases) {
-        let arr = this.aliases.get(alias).filter(a => a != name);
-        if (arr.length < 1) {
-          this.aliases.delete(alias);
-        } else {
-          this.aliases.set(alias, arr);
-        }
-      }
-      this.commands.delete(name);
-    }
-  }
-  getCommand(name) {
-      if (this.commands.has(name)) {
-        return this.commands.get(name);
-      }
-      if (this.aliases.has(name)) {
-        let aliasArr = this.aliases.get(name);
-        if (aliasArr.length == 1) {
-          return getCommand(aliasArr[0]);
-        }
-        //return alias instanceof Command ? alias : this.getCommand(alias);
-      }
-      return null;
-    }
-    * keys() {
-      let keys = [...this.commands.keys(), ...this.aliases.keys()];
-      keys.sort();
-      for (let key of keys) {
-        yield key;
-      }
-    }
-    * values() {
-      yield* this.commands.values();
-    }
-    * entries() {
-      let keys = [...this.commands.keys(), ...this.aliases.keys()];
-      keys.sort();
-      for (let key of keys) {
-        yield [key, this.getCommand(key)];
-      }
-    }
-    * validCommands() {
-      let vals = [...this.commands.keys()];
-      for (let [alias, aliasArr] of this.aliases) {
-        if (aliasArr.length == 1) {
-          vals.push(alias);
-        }
-      }
-      vals.sort();
-      yield* vals;
-    }
-    *[Symbol.iterator]() {
-      yield* this.validCommands();
-    }
-}
-
 const shorthandMap = new WeakMap();
 
 function hotkeySubmit(event, text, parser){
@@ -188,7 +105,11 @@ class CommandParser {
     }
   }
   __getAutoCompletionOptions() {
-    return Array.from(this.commands.validCommands());
+    var commands = [];
+    for(command of this.commands.validCommands())
+    {
+      if(command.startsWith(this.autocomplete.text)
+    }
   }
 }
 
