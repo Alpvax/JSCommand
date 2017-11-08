@@ -27,8 +27,11 @@ class NumberNode extends ValueNode
 
   static fromSyntax(syntax)
   {
-    //Replace range syntax with discrete numbers
-    let syntaxArg = syntax.replace(/(-?\d+(?:\.\d+)?)(?:-|:|to|\.\.)(-?\d+(?:\.\d+)?)/g, (range, start, end) => Array.from(Array(end + 1 - start), (val, index) => index + parseFloat(start)));
+    let syntaxArg = syntax
+      //Strip whitespace
+      .replace(/\s+/g, "")
+      //Replace range syntax with discrete numbers
+      .replace(/(-?\d+(?:\.\d+)?)(?:-|:|to|\.\.)(-?\d+(?:\.\d+)?)/g, (range, start, end) => Array.from(Array(end + 1 - start), (val, index) => index + parseFloat(start)));
     for(let arg of syntaxArg.split(/,;/g))
     {
       this.addNumber(parseFloat(arg));
