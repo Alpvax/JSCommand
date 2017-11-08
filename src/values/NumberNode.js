@@ -1,5 +1,6 @@
 const ValueNode = require("./ValueNode.js");
 
+//TODO:Int vs float (currently float)
 class NumberNode extends ValueNode
 {
   addNumber(num)
@@ -16,12 +17,22 @@ class NumberNode extends ValueNode
   }
   excludeNumber(num)
   {
-    this.addOption(num);
+    this.removeOption(num);
   }
   /**Remove a range of numbers from start to end, inclusive */
   excludeRange(start, end)
   {
-    this.addOption(num);
+    this.removeIf((num) => num >= start && num <= end);
+  }
+
+  static fromSyntax(syntax)
+  {
+    //Replace range syntax with discrete numbers
+    let syntaxArg = syntax.replace(/(-?\d+(?:\.\d+)?)(?:-|:|to|\.\.)(-?\d+(?:\.\d+)?)/g, (range, start, end) => Array.from(Array(end + 1 - start), (val, index) => index + parseFloat(start)));
+    for(let arg of syntaxArg.split(/,;/g))
+    {
+      this.addNumber(parseFloat(arg));
+    }
   }
 
   parse(text)

@@ -17,8 +17,12 @@ class ValueNode extends CommandNode
   {
     if(this.options.includes(option))
     {
-      this.options = this.options.filter((opt) => opt != option);
+      this.removeIf((opt) => opt == option);
     }
+  }
+  removeIf(filterFunc)
+  {
+    this.options = this.options.filter((opt) => !filterFunc(opt));
   }
   sortOptions(comparator)
   {
