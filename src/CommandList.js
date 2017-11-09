@@ -1,7 +1,13 @@
+/**Pattern used to match for raw, un-aliased command ids*/
+const RAW_COMMAND_EXP = "^:#(.+)$";
+
+const {sprintf} = require("sprintf-js");
+
 class CommandList {
   constructor() {
     this.commands = new Map();
     this.aliases = new Map();
+    this.aliasArgs = new Map();
   }
   loadAliases(json) {
     for(let alias in json) {
@@ -16,6 +22,7 @@ class CommandList {
     }
     else {
       this.aliases.set(alias, commandJson.action);
+      this.aliasArgs.set(alias, commandJson.args);
     }
   }
   addCommand(command) {
@@ -31,15 +38,49 @@ class CommandList {
       this.commands.delete(name);
     }
   }
-  getCommand(name) {
+  hasCommand(name) {
+    let rawCommandName = name.match(RAW_COMMAND_EXP);
+    if (rawCommandName) {
+      let rawName = rawCommandName[1];
+      return this.commands.has(rawName);
+    }
     if (this.aliases.has(name)) {
-      let commandName = this.aliases.get(name)
-      return commandName ? this.getCommand(commandName) : null;
+      let commandName = this.aliases.get(name);
+      return commandName && (this.commands.has(commandName) || this.hasCommand(commandName));
     }
-    if (this.commands.has(name)) {
-      return this.commands.get(name);
+    return false;
+  }
+  submitCommand(name, ...commandArgs) {
+    let rawCommandName = name.match(RAW_COMMAND_EXP);
+    if (rawCommandName) {
+      let rawName = rawCommandName[1];
+      if(this.commands.has(rawName)) {
+        let command = this.commands.get(rawName);
+        command.submit(...commandArgs);
+      }
+    } else if (this.aliases.has(name)) {
+      let commandName = this.aliases.get(name);
+      /*TODO: sub-aliases:
+      if(this.aliases.has(commandName))
+      {
+        if(this.aliasArgs.has(commandName))
+        {
+          //TODO: fill args:
+          //commandArgs = sprintf(this.aliasArgs.get(commandName), ...commandArgs);
+        }
+
+        return this.__getCommand(commandName);
+        let command = this.commands.get(commandName);
+
+      }*/
+      if(commandName && this.commands.has(commandName))
+      {
+        //TODO: fill args:
+        //commandArgs = sprintf(this.aliasArgs.get(commandName), ...commandArgs);
+        let command = this.commands.get(rawName);
+        command.submit(...commandArgs);
+      }
     }
-    return null;
   }
   * allNames(insertionOrder) {
     let keys = [this.aliases.keys()];
@@ -47,20 +88,10 @@ class CommandList {
       keys.sort();
     }
     for (let key of keys) {
-      if(key && getCommand(key))
+      if(key && this.hasCommand(key))
       {
         yield key;
       }
-    }
-  }
-  * values() {
-    yield* this.commands.values();
-  }
-  * entries() {
-    let keys = [...this.commands.keys(), ...this.aliases.keys()];
-    keys.sort();
-    for (let key of keys) {
-      yield [key, this.getCommand(key)];
     }
   }
   * validCommands() {
@@ -77,4 +108,6 @@ class CommandList {
     yield* this.validCommands();
   }
 }
+
+
 module.exports = CommandList;

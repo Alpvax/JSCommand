@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/Alpvax/JSCommand/issues"
   },
-  "homepage": "https://github.com/Alpvax/JSCommand#readme"
+  "homepage": "https://github.com/Alpvax/JSCommand#readme",
+  "dependencies": {
+    "sprintf-js": "^1.1.1"
+  }
 }
