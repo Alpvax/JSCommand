@@ -1,32 +1,26 @@
-const CommandParser = require("../compoundCommandParser.js");
-const {CommandComponent, SubComponentTest} = require("../CommandComponent.js");
+const CommandParser = require("../CommandParser.js");
+const Command = require("../src/Command.js");
 
-function onLoad(input)
-{
-    let parser = new CommandParser(input);
-    parser.__getAutoCompletionOptions = function()//Force some autoCompletions until fully implemented.
-    {
-        return ["walk", "run", "pray"];
+class CommandMove extends Command {
+    parseArgs(commandLine) {
+        return {
+            "direction": commandLine
+        };
     }
-    //new CommandComponent("noSyntax");
-    new SubComponentTest("noSyntax");
+    submit(args) {
+        console.debug(args);
+        let direction = args["direction"];
+        if(direction) {
+            console.log("Moving %s", direction);
+        } else {
+          console.warn("No direction specified!!");
+        }
+    }
 }
 
-function loadAutoComplete()//Not called
-{
-    var input = document.getElementById("textInput");
-    var parser = new CommandParser(input);
-    
-    parser.register(new Command(/\w+(\s+(\w+))*/i, function(e, inputText, parser)
-    {
-        console.log("MOVING!!!");
-        return true;
-    }, "walk", "move", "go"));
-    
-    parser.register(new Command(/.*/, function(e, inputText, parser)
-    {
-        console.log("Wish upon a star!");
-        return true;
-    }, "wish", "hope", "pray"));
+function onLoad(input) {
+    let parser = new CommandParser(input).loadAliases(require("./aliasTest.json"));
+    parser.addCommand(new CommandMove("move"));
 }
+
 module.exports = onLoad;

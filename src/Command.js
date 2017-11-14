@@ -13,7 +13,7 @@ class Command {
     };
   }
   submit(args) {
-    console.error("Command %s registered with no \"submit\" method.%nArgs: %O", this.name, args);
+    console.error("Command %s registered with no \"submit\" method.\nArgs: %O", this.name, args);
   }
 }
 

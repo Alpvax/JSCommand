@@ -43,6 +43,9 @@ class CommandList {
     }
     if (this.aliases.has(name)) {
       let commandName = this.aliases.get(name);
+      if (typeof commandName !== "string") {
+        commandName = commandName.commandKey;
+      }
       return commandName && (this.commands.has(commandName) || this.hasCommand(commandName));
     }
     return false;
@@ -102,8 +105,8 @@ class CommandList {
         }
   }*/
     }
-    * allNames(insertionOrder) {
-      let keys = [this.aliases.keys()];
+    * valid(insertionOrder) {
+      let keys = Array.from(this.aliases.keys());
       if (!insertionOrder) {
         keys.sort();
       }
@@ -113,18 +116,8 @@ class CommandList {
         }
       }
     }
-    * validCommands() {
-      let vals = [...this.commands.keys()];
-      for (let [alias, aliasArr] of this.aliases) {
-        if (aliasArr.length == 1) {
-          vals.push(alias);
-        }
-      }
-      vals.sort();
-      yield* vals;
-    }
     *[Symbol.iterator]() {
-      yield* this.validCommands();
+      yield* this.valid();
     }
 }
 

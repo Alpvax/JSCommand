@@ -43,3 +43,5 @@ class NumberNode extends ValueNode
     return parseFloat(text);
   }
 }
+
+module.exports = NumberNode;

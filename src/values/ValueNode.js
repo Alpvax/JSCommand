@@ -41,3 +41,6 @@ class ValueNode extends CommandNode
     },[]);
   }
 }
+
+module.exports = ValueNode;
+module.exports.Number = require("./NumberNode.js");

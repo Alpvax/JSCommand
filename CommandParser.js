@@ -1,25 +1,26 @@
 const AutoCompleter = require("./AutoCompleter.js");
 const CommandOverwritten = require("./CommandOverwritten.js");
 
+const CommandList = require("./src/CommandList.js");
+
 const shorthandMap = new WeakMap();
 
-function hotkeySubmit(event, text, parser){
+function hotkeySubmit(event, text, parser) {
   event.preventDefault();
   parser.submit();
 }
-function hotkeyAutoComplete(event, text, parser){
+function hotkeyAutoComplete(event, text, parser) {
   event.preventDefault();
   parser.autocomplete(event.shiftKey);
 }
 hotkeyAutoComplete.noDisableAutocomplete = true;
-function hotkeyClear(event, text, parser){
+function hotkeyClear(event, text, parser) {
   event.preventDefault();
   parser.clearText();
 }
 
-function shorthand (parser, func) {
-  if(!shorthandMap.has(parser))
-  {
+function shorthand(parser, func) {
+  if (!shorthandMap.has(parser)) {
     shorthandMap.set(parser, new Map([
       [parser.submit, hotkeySubmit],
       [parser.autocomplete, hotkeyAutoComplete],
@@ -44,6 +45,10 @@ class CommandParser {
   }
   activate() {
     this.active = true;
+    return this;
+  }
+  loadAliases(json) {
+    this.commands.loadAliases(json);
     return this;
   }
   deactivate() {
@@ -82,7 +87,14 @@ class CommandParser {
     this.autocompleter.fillNext(reverse);
   }
   submit() {
-    console.log(this.text);
+    let arg_split = /\w+|(["']).+?(?:\\\1.+?)*(?:(?:\\\\\1)|\1)/g;
+    let args = [];
+    let m;
+    while ((m = arg_split.exec(this.text)) !== null) {
+        args.push(m[0])
+    }
+    this.commands.submitCommand(...args);//TODO
+    //console.log(this.text);
     let handled = true; //TODO
     if (handled) {
       this.clearText();
@@ -106,10 +118,13 @@ class CommandParser {
   }
   __getAutoCompletionOptions() {
     var commands = [];
-    for(command of this.commands.validCommands())
-    {
-      if(command.startsWith(this.autocomplete.text)
+    for (let command of this.commands.valid()) {
+      if (command.startsWith(this.autocompleter.text))
+      {
+        commands.push(command);
+      }
     }
+    return commands;
   }
 }
 
