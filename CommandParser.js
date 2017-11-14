@@ -68,8 +68,12 @@ class CommandParser {
     this.hotkeys[key] = shorthand(this, callback);
     return this; //For chaining
   }
-  addCommand(command) {
-    this.commands.addCommand(command);
+  /**
+   * Add a command to the list of commands.
+   * Optional noAlias boolean will prevent the command from being used without the rawCommand prefix (:#<command>)
+   */
+  addCommand(command, noAlias) {
+    this.commands.addCommand(command, !noAlias);
     return this; //For chaining
   }
   /**
@@ -87,7 +91,7 @@ class CommandParser {
     this.autocompleter.fillNext(reverse);
   }
   submit() {
-    let arg_split = /\w+|(["']).+?(?:\\\1.+?)*(?:(?:\\\\\1)|\1)/g;
+    let arg_split = /(?:^:#)?(?:\w+|(["']).+?(?:\\\1.+?)*(?:(?:\\\\\1)|\1))/g;
     let args = [];
     let m;
     while ((m = arg_split.exec(this.text)) !== null) {

@@ -1,5 +1,5 @@
 /**Pattern used to match for raw, un-aliased command ids*/
-const RAW_COMMAND_EXP = "^:#(.+)$";
+const RAW_COMMAND_EXP = /^:#(.+)$/;
 
 //TODO: const {sprintf} = require("sprintf-js");
 const CommandAlias = require("./CommandAlias.js");
@@ -18,17 +18,27 @@ class CommandList {
   addAlias(alias, commandJson) {
     if (typeof commandJson === "string") {
       this.aliases.set(alias, commandJson);
+    } else if(!commandJson && this.aliases.has(alias)) {
+      //Delete alias if new alias is null/undefined/empty...
+      this.aliases.delete(alias);
     } else {
       this.aliases.set(alias, new CommandAlias(this, commandJson));
     }
   }
-  addCommand(command) {
+  /**
+   * Optional addAlias boolean will allow using the command key without matching RAW_COMMAND_EXP
+   */
+  addCommand(command, addAlias) {
     var name = command.name;
     if (this.commands.has(name)) {
       let existingCmd = this.commands.get(name);
       console.warn("Command %O already registered while trying to add Command %O with name %s.", existingCmd, command, name);
     }
     this.commands.set(name, command);
+    if(addAlias && !this.aliases.has(name))
+    {
+      this.addAlias(name, name);
+    }
   }
   removeCommand(name) {
     if (this.commands.has(name)) {
@@ -46,7 +56,7 @@ class CommandList {
       if (typeof commandName !== "string") {
         commandName = commandName.commandKey;
       }
-      return commandName && (this.commands.has(commandName) || this.hasCommand(commandName));
+      return commandName && ((commandName != name && this.aliases.has(commandName) && this.hasCommand(commandName)) || this.commands.has(commandName));
     }
     return false;
   }
@@ -60,7 +70,7 @@ class CommandList {
     } else if (this.aliases.has(name)) {
       let alias = this.aliases.get(name);
       if (typeof alias === "string") {
-        return this.aliases.has(alias) ? this.__getCommand(alias) : (this.commands.has(alias) ? this.commands.get(alias) : null);
+        return alias != name && this.aliases.has(alias) ? this.__getCommand(alias) : (this.commands.has(alias) ? this.commands.get(alias) : null);
       } else {
         return alias;
       }
@@ -70,8 +80,13 @@ class CommandList {
   }
   submitCommand(name, ...commandArgs) {
     let command = this.__getCommand(name);
-    let args = command.parseArgs(...commandArgs);
-    command.submit(args);
+    if(command) {
+      let args = command.parseArgs(...commandArgs);
+      command.submit(args);
+    } else {
+      //TODO: Command not found
+      console.warn("Command not found: %s", name);
+    }
 
     /*  let rawCommandName = name.match(RAW_COMMAND_EXP);
       if (rawCommandName) {
@@ -104,21 +119,21 @@ class CommandList {
           command.submit(...commandArgs);
         }
   }*/
+  }
+  * valid(insertionOrder) {
+    let keys = Array.from(this.aliases.keys());
+    if (!insertionOrder) {
+      keys.sort();
     }
-    * valid(insertionOrder) {
-      let keys = Array.from(this.aliases.keys());
-      if (!insertionOrder) {
-        keys.sort();
+    for (let key of keys) {
+      if (key && this.hasCommand(key)) {
+        yield key;
       }
-      for (let key of keys) {
-        if (key && this.hasCommand(key)) {
-          yield key;
-        }
-      }
     }
-    *[Symbol.iterator]() {
-      yield* this.valid();
-    }
+  }
+  *[Symbol.iterator]() {
+    yield* this.valid();
+  }
 }
 
 

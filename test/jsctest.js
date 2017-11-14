@@ -17,10 +17,16 @@ class CommandMove extends Command {
         }
     }
 }
+class CommandReload extends Command {
+    submit(args) {
+      location.reload();
+    }
+}
 
 function onLoad(input) {
     let parser = new CommandParser(input).loadAliases(require("./aliasTest.json"));
     parser.addCommand(new CommandMove("move"));
+    parser.addCommand(new CommandReload("reload"), true);
 }
 
 module.exports = onLoad;
