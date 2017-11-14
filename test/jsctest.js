@@ -24,9 +24,11 @@ class CommandReload extends Command {
 }
 
 function onLoad(input) {
-    let parser = new CommandParser(input).loadAliases(require("./aliasTest.json"));
+    let data = require("./testData.json");
+    let parser = new CommandParser(input).loadAliases(data.commands);
     parser.addCommand(new CommandMove("move"));
     parser.addCommand(new CommandReload("reload"), true);
+    //TODO: parser.loadHotkeys(data.hotkeys);
 }
 
 module.exports = onLoad;

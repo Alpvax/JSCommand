@@ -1,0 +1,38 @@
+{
+  "hotkeys": {
+    "ArrowUp": {"action": "north"},
+    "ArrowDown": {"action": "south"},
+    "ArrowLeft": {"action": "east"},
+    "ArrowRight": {"action": "west"}
+  },
+  "commands": {
+    "walk": "move",
+    "go": "move",
+    "run": "move",
+    "north": {
+      "action": "go",
+      "args": {
+        "direction": "north"
+      }
+    },
+    "south": {
+      "action": "go",
+      "args": {
+        "direction": "south"
+      }
+    },
+    "east": {
+      "action": "go",
+      "args": {
+        "direction": "east"
+      }
+    },
+    "west": {
+      "action": "go",
+      "args": {
+        "direction": "west"
+      }
+    },
+    "boogie": "dance"
+  }
+}
