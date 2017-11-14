@@ -4,7 +4,9 @@
         <script>
             function onLoad()
             {
-                require("./jsctest.js")(document.getElementById("textInput"));
+                let input = document.getElementById("textInput");
+                input.focus();
+                require("./jsctest.js")(input);
             }
         </script>
     </head>
