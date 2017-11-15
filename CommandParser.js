@@ -99,7 +99,6 @@ class CommandParser {
       let match = command.match(/^autocomplete(?::(?:(s(?:hift)?)|(c(?:trl|ontrol)?)|(a(?:lt)?)|(m(?:eta)?|co?m(?:man)?d)))?$/);
       console.debug("Shift: %s, Control: %s, Alt: %s, Command (Meta): %s", Boolean(match[1]), Boolean(match[2]), Boolean(match[3]), Boolean(match[4]));
     }*/
-    console.debug("Adding hotkey: %s => %O", key, command);
     let commandName = typeof command == "string" ? command : command.action;
     if(/^parser.(.+)/i.test(commandName))
     {
@@ -166,7 +165,7 @@ class CommandParser {
     if (!this.active) {
       return;
     }
-    var disableAutoCompleter = true;
+    var disableAutoCompleter = !["Shift", "Control", "Alt", "Meta"].includes(e.key);
     if (this.hotkeys.has(e.key)) {
       let command = this.hotkeys.get(e.key);
       let match = command.match(/^parser\.(.+)/i);
@@ -175,7 +174,7 @@ class CommandParser {
         let parserCmd = match[1];
         let autocomp = parserCmd.match(/^autocomplete([.\-:]r(?:everse)?)?/i)
         if(autocomp) {
-          this.autocomplete(Boolean(autocomp[0]) || e.shiftKey);//TODO: disable hard-coded shiftkey
+          this.autocomplete(Boolean(autocomp[1]) || e.shiftKey);//TODO: disable hard-coded shiftkey
           disableAutoCompleter = false;
         } else if (/^submit/i.test(parserCmd)){
           this.submit();
@@ -206,7 +205,7 @@ class CommandParser {
   __getAutoCompletionOptions() {
     var commands = [];
     for (let command of this.commands.valid()) {
-      if (!command.startsWith("HOTKEY_") && command.startsWith(this.autocompleter.text))
+      if (!command.startsWith("HOTKEY_") && command.startsWith(this.text))
       {
         commands.push(command);
       }

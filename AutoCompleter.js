@@ -1,46 +1,36 @@
-class AutoCompleter
-{
-    constructor(parser)
+class AutoCompleter {
+  constructor(parser) {
+    this.parser = parser;
+    this.active = false;
+    this.index = 0;
+    this.options = [];
+  }
+  fillNext(reverseDirection) {
+    if (!this.active) {
+      this.active = true;
+      this.index = reverseDirection ? 0 : -1;
+      this.options = this.parser.__getAutoCompletionOptions();
+    }
+    if (this.options.length <= 0) {
+      return;
+    }
+    if (reverseDirection) //Opposite direction
     {
-        this.parser = parser;
-        this.text = null;
+      this.index--;
+      if (this.index < 0) {
+        this.index = this.options.length + this.index;
+      }
+    } else {
+      this.index++;
+      if (this.index >= this.options.length) {
         this.index = 0;
-        this.options = [];
+      }
     }
-    fillNext(reverseDirection)
-    {
-        if(this.text == null)
-        {
-            this.text = this.parser.text;
-            this.index = 0;
-            this.options = this.parser.__getAutoCompletionOptions();
-        }
-        if(this.options.length <= 0)
-        {
-            return;
-        }
-        this.parser.text = this.options[this.index];
-        if(reverseDirection)//Opposite direction
-        {
-            this.index--;
-            if(this.index < 0)
-            {
-                this.index = this.options.length - 1;
-            }
-        }
-        else
-        {
-            this.index++;
-            if(this.index >= this.options.length)
-            {
-                this.index = 0;
-            }
-        }
-    }
-    disable()
-    {
-        this.text = null;
-        this.options = [];
-    }
+    this.parser.text = this.options[this.index];
+  }
+  disable() {
+    this.active = false;
+    this.options = [];
+  }
 }
 module.exports = AutoCompleter
