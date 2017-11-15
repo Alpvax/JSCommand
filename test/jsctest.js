@@ -27,7 +27,7 @@ function onLoad(input) {
     let data = require("./testData.json");
     let parser = new CommandParser(input).loadAliases(data.commands);
     parser.addCommand(new CommandMove("move"));
-    parser.addCommand(new CommandReload("reload"), true);
+    parser.addCommand(new (require("../src/commands/CommandReload.js"))("reload"), true);
     parser.addCommand(new (require("../src/commands/CommandExit.js"))("exit"), true);
     parser.loadHotkeys(data.hotkeys);
 }
