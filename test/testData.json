@@ -1,9 +1,10 @@
 {
   "hotkeys": {
+    "IGNORETHISINVALIDKEYBIND:Tab": "autocomplete:shift",
     "ArrowUp": {"action": "north"},
     "ArrowDown": {"action": "south"},
     "ArrowLeft": {"action": "east"},
-    "ArrowRight": {"action": "west"}
+    "ArrowRight": "west"
   },
   "commands": {
     "walk": "move",

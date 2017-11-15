@@ -16,11 +16,11 @@ class CommandList {
     }
   }
   addAlias(alias, commandJson) {
-    if (typeof commandJson === "string") {
-      this.aliases.set(alias, commandJson);
-    } else if(!commandJson && this.aliases.has(alias)) {
+    if(!commandJson && this.aliases.has(alias)) {
       //Delete alias if new alias is null/undefined/empty...
       this.aliases.delete(alias);
+    } else if (typeof commandJson === "string") {
+      this.aliases.set(alias, commandJson);
     } else {
       this.aliases.set(alias, new CommandAlias(this, commandJson));
     }
@@ -87,38 +87,6 @@ class CommandList {
       //TODO: Command not found
       console.warn("Command not found: %s", name);
     }
-
-    /*  let rawCommandName = name.match(RAW_COMMAND_EXP);
-      if (rawCommandName) {
-        let rawName = rawCommandName[1];
-        if (this.commands.has(rawName)) {
-          let command = this.commands.get(rawName);
-          command.submit(...commandArgs);
-        }
-      } else if (this.aliases.has(name)) {
-        let alias = this.aliases.get(name);
-        if (typeof alias === "string") {
-
-        }
-        /*TODO: sub-aliases:
-        if(this.aliases.has(commandName))
-        {
-          if(this.aliasArgs.has(commandName))
-          {
-          //TODO: fill args:
-          //commandArgs = sprintf(this.aliasArgs.get(commandName), ...commandArgs);
-          }
-
-          return this.__getCommand(commandName);
-          let command = this.commands.get(commandName);
-        }
-        if (commandName && this.commands.has(commandName)) {
-          //TODO: fill args:
-          //commandArgs = sprintf(this.aliasArgs.get(commandName), ...commandArgs);
-          let command = this.commands.get(commandName);
-          command.submit(...commandArgs);
-        }
-  }*/
   }
   * valid(insertionOrder) {
     let keys = Array.from(this.aliases.keys());
