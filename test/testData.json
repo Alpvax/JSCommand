@@ -34,6 +34,7 @@
         "direction": "west"
       }
     },
+    "exit": "exit",
     "boogie": "dance"
   }
 }
