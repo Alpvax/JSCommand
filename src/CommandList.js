@@ -4,33 +4,45 @@ const RAW_COMMAND_EXP = /^:#(.+)$/;
 //TODO: const {sprintf} = require("sprintf-js");
 const CommandAlias = require("./CommandAlias.js");
 
-class CommandList {
-  constructor() {
+class CommandList
+{
+  constructor()
+  {
     this.commands = new Map();
     this.aliases = new Map();
   }
-  loadAliases(json) {
-    for (let alias in json) {
+  loadAliases(json)
+  {
+    for (let alias in json)
+    {
       let commandJson = json[alias];
       this.addAlias(alias, commandJson);
     }
   }
-  addAlias(alias, commandJson) {
-    if(!commandJson && this.aliases.has(alias)) {
+  addAlias(alias, commandJson)
+  {
+    if(!commandJson && this.aliases.has(alias))
+    {
       //Delete alias if new alias is null/undefined/empty...
       this.aliases.delete(alias);
-    } else if (typeof commandJson === "string") {
+    }
+    else if (typeof commandJson === "string")
+    {
       this.aliases.set(alias, commandJson);
-    } else {
+    }
+    else
+    {
       this.aliases.set(alias, new CommandAlias(this, commandJson));
     }
   }
   /**
    * Optional addAlias boolean will allow using the command key without matching RAW_COMMAND_EXP
    */
-  addCommand(command, addAlias) {
+  addCommand(command, addAlias)
+  {
     var name = command.name;
-    if (this.commands.has(name)) {
+    if (this.commands.has(name))
+    {
       let existingCmd = this.commands.get(name);
       console.warn("Command %O already registered while trying to add Command %O with name %s.", existingCmd, command, name);
     }
@@ -40,66 +52,91 @@ class CommandList {
       this.addAlias(name, name);
     }
   }
-  removeCommand(name) {
-    if (this.commands.has(name)) {
+  removeCommand(name)
+  {
+    if (this.commands.has(name))
+    {
       this.commands.delete(name);
     }
   }
-  hasCommand(name) {
+  hasCommand(name)
+  {
     let rawCommandName = name.match(RAW_COMMAND_EXP);
-    if (rawCommandName) {
+    if (rawCommandName)
+    {
       let rawName = rawCommandName[1];
       return this.commands.has(rawName);
     }
-    if (this.aliases.has(name)) {
+    if (this.aliases.has(name))
+    {
       let commandName = this.aliases.get(name);
-      if (typeof commandName !== "string") {
+      if (typeof commandName !== "string")
+      {
         commandName = commandName.commandKey;
       }
       return commandName && ((commandName != name && this.aliases.has(commandName) && this.hasCommand(commandName)) || this.commands.has(commandName));
     }
     return false;
   }
-  __getCommand(name) {
+  __getCommand(name)
+  {
     let rawCommandName = name.match(RAW_COMMAND_EXP);
-    if (rawCommandName) {
+    if (rawCommandName)
+    {
       let rawName = rawCommandName[1];
-      if (this.commands.has(rawName)) {
+      if (this.commands.has(rawName))
+      {
         return this.commands.get(rawName);
       }
-    } else if (this.aliases.has(name)) {
+    }
+    else if (this.aliases.has(name))
+    {
       let alias = this.aliases.get(name);
-      if (typeof alias === "string") {
+      if (typeof alias === "string")
+      {
         return alias != name && this.aliases.has(alias) ? this.__getCommand(alias) : (this.commands.has(alias) ? this.commands.get(alias) : null);
-      } else {
+      }
+      else
+      {
         return alias;
       }
-    } else {
+    }
+    else
+    {
       return null;
     }
   }
-  submitCommand(name, ...commandArgs) {
+  submitCommand(name, ...commandArgs)
+  {
     let command = this.__getCommand(name);
-    if(command) {
+    if(command)
+    {
       let args = command.parseArgs(...commandArgs);
       command.submit(args);
-    } else {
+    }
+    else
+    {
       //TODO: Command not found
       console.warn("Command not found: %s", name);
     }
   }
-  * valid(insertionOrder) {
+  * valid(insertionOrder)
+  {
     let keys = Array.from(this.aliases.keys());
-    if (!insertionOrder) {
+    if (!insertionOrder)
+    {
       keys.sort();
     }
-    for (let key of keys) {
-      if (key && this.hasCommand(key)) {
+    for (let key of keys)
+    {
+      if (key && this.hasCommand(key))
+      {
         yield key;
       }
     }
   }
-  *[Symbol.iterator]() {
+  *[Symbol.iterator]()
+  {
     yield* this.valid();
   }
 }

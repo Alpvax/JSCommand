@@ -1,7 +1,9 @@
 const Command = require("../Command.js");
 
-class CommandReload extends Command {
-  submit(args) {
+class CommandReload extends Command
+{
+  submit(args)
+  {
     location.reload();
   }
 }

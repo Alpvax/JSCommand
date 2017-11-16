@@ -1,9 +1,21 @@
 {
   "hotkeys": {
     "IGNORETHISINVALIDKEYBIND:Tab": "autocomplete:shift",
-    "ArrowUp": {"action": "north"},
-    "ArrowDown": {"action": "south"},
-    "ArrowLeft": {"action": "east"},
+    "ArrowUp": {
+      "action": "north"
+    },
+    "ArrowDown": {
+      "action": "north",
+      "args": {
+        "direction": "south"
+      }
+    },
+    "ArrowLeft": {
+      "action": "move",
+      "args": {
+        "direction": "east"
+      }
+    },
     "ArrowRight": "west"
   },
   "commands": {

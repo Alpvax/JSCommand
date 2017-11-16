@@ -4,6 +4,7 @@ class ValueNode extends CommandNode
 {
   constructor(...args)
   {
+    super(...args);//TODO:?
     this.options = [...args];
   }
   addOption(option)
@@ -31,7 +32,8 @@ class ValueNode extends CommandNode
 
   getCompletionOptions(partialText)
   {
-    return this.options.reduce((arr, option) => {
+    return this.options.reduce((arr, option) =>
+    {
       let optStr = option.toString();
       if(optStr.startsWith(partialText))
       {

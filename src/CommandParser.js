@@ -1,26 +1,32 @@
 const AutoCompleter = require("./AutoCompleter.js");
-const CommandOverwritten = require("./CommandOverwritten.js");
 
-const CommandList = require("./src/CommandList.js");
+const CommandList = require("./CommandList.js");
 
 const shorthandMap = new WeakMap();
 
-function hotkeySubmit(event, text, parser) {
+function hotkeySubmit(event, text, parser)
+{
   event.preventDefault();
   parser.submit();
 }
-function hotkeyAutoComplete(event, text, parser) {
+
+function hotkeyAutoComplete(event, text, parser)
+{
   event.preventDefault();
   parser.autocomplete(event.shiftKey);
 }
 hotkeyAutoComplete.noDisableAutocomplete = true;
-function hotkeyClear(event, text, parser) {
+
+function hotkeyClear(event, text, parser)
+{
   event.preventDefault();
   parser.clearText();
 }
 
-function shorthand(parser, func) {
-  if (!shorthandMap.has(parser)) {
+function shorthand(parser, func)
+{
+  if (!shorthandMap.has(parser))
+  {
     shorthandMap.set(parser, new Map([
       [parser.submit, hotkeySubmit],
       [parser.autocomplete, hotkeyAutoComplete],
@@ -31,8 +37,10 @@ function shorthand(parser, func) {
   return map.has(func) ? map.get(func) : func;
 }
 
-class CommandParser {
-  constructor(inputText) {
+class CommandParser
+{
+  constructor(inputText)
+  {
     this.inputText = inputText;
     this.active = true;
     this.commands = new CommandList();
@@ -47,32 +55,40 @@ class CommandParser {
     this.addHotkey("Tab", "parser.autocomplete");
     this.inputText.addEventListener("keydown", this.__handleKeyDown.bind(this));
   }
-  activate() {
+  activate()
+  {
     this.active = true;
     return this;
   }
-  loadAliases(json) {
+  loadAliases(json)
+  {
     this.commands.loadAliases(json);
     return this;
   }
-  loadHotkeys(json) {
-    for (let key in json) {
+  loadHotkeys(json)
+  {
+    for (let key in json)
+    {
       let commandJson = json[key];
       this.addHotkey(key, commandJson);
     }
     return this;
   }
-  deactivate() {
+  deactivate()
+  {
     this.active = false;
     return this;
   }
-  get text() {
-    return this.inputText.value
+  get text()
+  {
+    return this.inputText.value;
   }
-  set text(value) {
-    this.inputText.value = value
+  set text(value)
+  {
+    this.inputText.value = value;
   }
-  addHotkey(key, command) {
+  addHotkey(key, command)
+  {
     //TODO:Modifiers
     /*let modifiers = {
       "shift": /s(hift)?/i.test(key),
@@ -86,8 +102,9 @@ class CommandParser {
           /m(eta)?|cmd|command/i.test(key) ? "m" : "" +
           key;
     */
-    if (this.hotkeys.has(key)) {
-      if(!command)
+    if (this.hotkeys.has(key))
+    {
+      if (!command)
       {
         console.log("Removing keybind \"%s\": %O", key, this.hotkeys.get(key));
         return this;
@@ -100,19 +117,22 @@ class CommandParser {
       console.debug("Shift: %s, Control: %s, Alt: %s, Command (Meta): %s", Boolean(match[1]), Boolean(match[2]), Boolean(match[3]), Boolean(match[4]));
     }*/
     let commandName = typeof command == "string" ? command : command.action;
-    if(/^parser.(.+)/i.test(commandName))
+    if (/^parser.(.+)/i.test(commandName))
     {
       this.hotkeys.set(key, command);
     }
-    else {
-      let alias = "HOTKEY_" + key
+    else
+    {
+      let alias = "HOTKEY_" + key;
       this.commands.addAlias(alias, command);
       this.hotkeys.set(key, alias);
     }
     return this;
   }
-  addHotkeyCallback(key, callback) {
-    if (this.hotkeys.has(key)) {
+  addHotkeyCallback(key, callback)
+  {
+    if (this.hotkeys.has(key))
+    {
       console.log("Replacing keybind \"%s\": %O with: %O", key, this.hotkeys.get(key), callback);
     }
     this.hotkeys.set(key, shorthand(this, callback));
@@ -122,7 +142,8 @@ class CommandParser {
    * Add a command to the list of commands.
    * Optional noAlias boolean will prevent the command from being used without the rawCommand prefix (:#<command>)
    */
-  addCommand(command, noAlias) {
+  addCommand(command, noAlias)
+  {
     this.commands.addCommand(command, !noAlias);
     return this; //For chaining
   }
@@ -130,61 +151,78 @@ class CommandParser {
    * Use this to clear all text from the entry.
    * Optional argument is keyEvent (for convenience with addHotkey). If passed in, event.preventDefault() will be called.
    */
-  clearText(parser) {
+  clearText(parser)
+  {
     this.text = "";
   }
   /**
    * Use this to autocomplete the entry.
    * Optional argument is boolean to reverse direction.
    */
-  autocomplete(reverse) {
+  autocomplete(reverse)
+  {
     this.autocompleter.fillNext(reverse);
   }
-  submit() {
-    this.commands.submitCommand(...this.__textToArgs());//TODO:?
+  submit()
+  {
+    this.commands.submitCommand(...this.__textToArgs()); //TODO:?
     //console.log(this.text);
     let handled = true; //TODO
-    if (handled) {
+    if (handled)
+    {
       this.clearText();
     }
     return handled;
   }
-  get usage() {
+  get usage()
+  {
     //TODO: Usage
   }
-  __textToArgs() {//TODO
+  __textToArgs()
+  { //TODO
     let arg_split = /(?:^:#)?(?:\w+|(["']).+?(?:\\\1.+?)*(?:(?:\\\\\1)|\1))/g;
     let args = [];
     let m;
-    while ((m = arg_split.exec(this.text)) !== null) {
-        args.push(m[0])
+    while ((m = arg_split.exec(this.text)) !== null)
+    {
+      args.push(m[0]);
     }
     return args;
   }
-  __handleKeyDown(e) {
-    if (!this.active) {
+  __handleKeyDown(e)
+  {
+    if (!this.active)
+    {
       return;
     }
     var disableAutoCompleter = !["Shift", "Control", "Alt", "Meta"].includes(e.key);
-    if (this.hotkeys.has(e.key)) {
+    if (this.hotkeys.has(e.key))
+    {
       let command = this.hotkeys.get(e.key);
       let match = command.match(/^parser\.(.+)/i);
-      if(match)
+      if (match)
       {
         let parserCmd = match[1];
-        let autocomp = parserCmd.match(/^autocomplete([.\-:]r(?:everse)?)?/i)
-        if(autocomp) {
-          this.autocomplete(Boolean(autocomp[1]) || e.shiftKey);//TODO: disable hard-coded shiftkey
+        let autocomp = parserCmd.match(/^autocomplete([.\-:]r(?:everse)?)?/i);
+        if (autocomp)
+        {
+          this.autocomplete(Boolean(autocomp[1]) || e.shiftKey); //TODO: disable hard-coded shiftkey
           disableAutoCompleter = false;
-        } else if (/^submit/i.test(parserCmd)){
+        }
+        else if (/^submit/i.test(parserCmd))
+        {
           this.submit();
-        } else if (/^clear/i.test(parserCmd)){
+        }
+        else if (/^clear/i.test(parserCmd))
+        {
           this.clearText();
         }
-      } else {
+      }
+      else
+      {
         this.commands.submitCommand(command, this.__textToArgs());
       }
-      e.preventDefault();//TODO:Optional?
+      e.preventDefault(); //TODO:Optional?
       /*if (typeof command === "string") {
         return alias != name && this.aliases.has(alias) ? this.__getCommand(alias) : (this.commands.has(alias) ? this.commands.get(alias) : null);
       } else {
@@ -197,14 +235,16 @@ class CommandParser {
       }
       var result = callback(e, this.text, this);*/
     }
-    if(disableAutoCompleter)
+    if (disableAutoCompleter)
     {
       this.autocompleter.disable();
     }
   }
-  __getAutoCompletionOptions() {
+  __getAutoCompletionOptions()
+  {
     var commands = [];
-    for (let command of this.commands.valid()) {
+    for (let command of this.commands.valid())
+    {
       if (!command.startsWith("HOTKEY_") && command.startsWith(this.text))
       {
         commands.push(command);
@@ -214,4 +254,4 @@ class CommandParser {
   }
 }
 
-module.exports = CommandParser
+module.exports = CommandParser;
