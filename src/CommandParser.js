@@ -45,7 +45,7 @@ class CommandParser
     this.active = true;
     this.commands = new CommandList();
     this.hotkeys = new Map();
-    this.autocompleter = new AutoCompleter(this);
+    this.autocompleter = new AutoCompleter(this.__getAutoCompletionOptions);
     /*TODO:
     this.addHotkey("Enter", this.submit);
     this.addHotkey("Escape", this.clearText);
@@ -161,7 +161,7 @@ class CommandParser
    */
   autocomplete(reverse)
   {
-    this.autocompleter.fillNext(reverse);
+    this.text = this.autocompleter.fillNext(reverse);//TODO: partial autocompletion
   }
   submit()
   {
@@ -180,7 +180,7 @@ class CommandParser
   }
   __textToArgs()
   { //TODO
-    let arg_split = /(?:^:#)?(?:\w+|(["']).+?(?:\\\1.+?)*(?:(?:\\\\\1)|\1))/g;
+    let arg_split = /(?:^:#)?(?:[^\s]+|(?:\s+|^)(["']).+?(?:\\\1.+?)*(?:(?:\\\\\1)|\1))/g;
     let args = [];
     let m;
     while ((m = arg_split.exec(this.text)) !== null)

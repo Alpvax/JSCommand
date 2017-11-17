@@ -1,41 +1,40 @@
 class AutoCompleter
 {
-  constructor(parser)
+  constructor(getOptionsCallback)
   {
-    this.parser = parser;
+    this.getOptions = getOptionsCallback;
     this.active = false;
     this.index = 0;
     this.options = [];
+    this.numOptions = this.options.length;
   }
-  fillNext(reverseDirection)
+  getNext(reverseDirection)
   {
     if (!this.active)
     {
-      this.active = true;
-      this.index = reverseDirection ? 0 : -1;
-      this.options = this.parser.__getAutoCompletionOptions();
+      this.enable(reverseDirection);
     }
-    if (this.options.length <= 0)
+    if (this.numOptions <= 0)
     {
-      return;
+      return null;
     }
     if (reverseDirection) //Opposite direction
     {
       this.index--;
-      if (this.index < 0)
-      {
-        this.index = this.options.length + this.index;
-      }
     }
     else
     {
       this.index++;
-      if (this.index >= this.options.length)
-      {
-        this.index = 0;
-      }
     }
-    this.parser.text = this.options[this.index];
+    this.index = (this.index + this.numOptions) % this.numOptions;
+    return this.options[this.index];
+  }
+  enable(reverseDirection)
+  {
+    this.active = true;
+    this.index = reverseDirection ? 0 : -1;
+    this.options = this.parser.__getAutoCompletionOptions();
+    this.numOptions = this.options.length;
   }
   disable()
   {
