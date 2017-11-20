@@ -33,7 +33,7 @@ class AutoCompleter
   {
     this.active = true;
     this.index = reverseDirection ? 0 : -1;
-    this.options = this.parser.__getAutoCompletionOptions();
+    this.options = this.getOptions();
     this.numOptions = this.options.length;
   }
   disable()

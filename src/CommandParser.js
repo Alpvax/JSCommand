@@ -45,7 +45,7 @@ class CommandParser
     this.active = true;
     this.commands = new CommandList();
     this.hotkeys = new Map();
-    this.autocompleter = new AutoCompleter(this.__getAutoCompletionOptions);
+    this.autocompleter = new AutoCompleter(() => this.__getAutoCompletionOptions());
     /*TODO:
     this.addHotkey("Enter", this.submit);
     this.addHotkey("Escape", this.clearText);
@@ -161,7 +161,7 @@ class CommandParser
    */
   autocomplete(reverse)
   {
-    this.text = this.autocompleter.fillNext(reverse);//TODO: partial autocompletion
+    this.text = this.autocompleter.getNext(reverse); //TODO: partial autocompletion
   }
   submit()
   {
@@ -179,15 +179,39 @@ class CommandParser
     //TODO: Usage
   }
   __textToArgs()
-  { //TODO
-    let arg_split = /(?:^:#)?(?:[^\s]+|(?:\s+|^)(["']).+?(?:\\\1.+?)*(?:(?:\\\\\1)|\1))/g;
+  { //TODO:https://regex101.com/r/3bpsdb/1
+    let noSpace = this.text.replace(/(["'])(.*?)(\s+)(.*?)\1/g, (full, quote, pre, space, post) =>
+    {
+      let res = pre;
+      for(let chr of space)
+      {
+        switch (chr)
+        {
+        case " ":
+          res += "\u001f";//Unit seperator
+          break;
+        case "\t":
+          res += "\u001e";//Record seperator
+          break;
+        case "\r":
+          break;//Nothing, remove character
+        case "\n":
+          res += "\u001d";//Group seperator
+          break;
+        }
+      }
+      return res + post;
+    });
+    let args = noSpace.split(" ");
+    return args.map((arg) => arg.replace("\u001f", " ").replace("\u001e", "\t").replace("\u001d", "\n"));//Restore original chars
+    /*let arg_split = /(?:^:#)?(?:[^\s]+|(?:\s+|^)(["']).+?(?:\\\1.+?)*(?:(?:\\\\\1)|\1))/g;
     let args = [];
     let m;
     while ((m = arg_split.exec(this.text)) !== null)
     {
       args.push(m[0]);
     }
-    return args;
+    return args;*/
   }
   __handleKeyDown(e)
   {

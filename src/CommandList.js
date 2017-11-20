@@ -117,7 +117,7 @@ class CommandList
     else
     {
       //TODO: Command not found
-      console.warn("Command not found: %s", name);
+      console.warn("Command not found: \"%s\"", name);
     }
   }
   * valid(insertionOrder)
