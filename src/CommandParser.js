@@ -2,41 +2,6 @@ const AutoCompleter = require("./AutoCompleter.js");
 
 const CommandList = require("./CommandList.js");
 
-const shorthandMap = new WeakMap();
-
-function hotkeySubmit(event, text, parser)
-{
-  event.preventDefault();
-  parser.submit();
-}
-
-function hotkeyAutoComplete(event, text, parser)
-{
-  event.preventDefault();
-  parser.autocomplete(event.shiftKey);
-}
-hotkeyAutoComplete.noDisableAutocomplete = true;
-
-function hotkeyClear(event, text, parser)
-{
-  event.preventDefault();
-  parser.clearText();
-}
-
-function shorthand(parser, func)
-{
-  if (!shorthandMap.has(parser))
-  {
-    shorthandMap.set(parser, new Map([
-      [parser.submit, hotkeySubmit],
-      [parser.autocomplete, hotkeyAutoComplete],
-      [parser.clearText, hotkeyClear]
-    ]));
-  }
-  let map = shorthandMap.get(parser);
-  return map.has(func) ? map.get(func) : func;
-}
-
 class CommandParser
 {
   constructor(inputText)
@@ -46,10 +11,6 @@ class CommandParser
     this.commands = new CommandList();
     this.hotkeys = new Map();
     this.autocompleter = new AutoCompleter(() => this.__getAutoCompletionOptions());
-    /*TODO:
-    this.addHotkey("Enter", this.submit);
-    this.addHotkey("Escape", this.clearText);
-    this.addHotkey("Tab", this.autocomplete);*/
     this.addHotkey("Enter", "parser.submit");
     this.addHotkey("Escape", "parser.clearText");
     this.addHotkey("Tab", "parser.autocomplete");
@@ -128,15 +89,6 @@ class CommandParser
       this.hotkeys.set(key, alias);
     }
     return this;
-  }
-  addHotkeyCallback(key, callback)
-  {
-    if (this.hotkeys.has(key))
-    {
-      console.log("Replacing keybind \"%s\": %O with: %O", key, this.hotkeys.get(key), callback);
-    }
-    this.hotkeys.set(key, shorthand(this, callback));
-    return this; //For chaining
   }
   /**
    * Add a command to the list of commands.
