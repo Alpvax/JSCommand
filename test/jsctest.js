@@ -27,7 +27,7 @@ class CommandMove extends Command
 function onLoad(input)
 {
   let data = require("./testData.json");
-  let parser = new CommandParser(input).loadAliases(data.commands);
+  let parser = new CommandParser(input).loadAliases(data.aliases);
   parser.addCommand(new CommandMove("move"));
   parser.addCommand(new(require("../src/commands/CommandReload.js"))("reload"), true);
   parser.addCommand(new(require("../src/commands/CommandExit.js"))("exit"), true);
