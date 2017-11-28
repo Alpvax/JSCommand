@@ -1,4 +1,4 @@
-const CommandSyntax = require("../CommandSyntax.js");
+const CommandSyntax = require("./definition/CommandSyntax.js");
 
 class Command
 {
